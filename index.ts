@@ -10,25 +10,25 @@ function handlePreFlightRequest(): Response {
 
 async function handler(_req: Request): Promise<Response> {
   if (_req.method == "OPTIONS") {
-    handlePreFlightRequest();
+    return handlePreFlightRequest();
   }
 
   const headers = new Headers();
   headers.append("Content-Type", "application/json");
 
-  const similarityRequestBody = JSON.stringify({
-    word1: "centrale",
-    word2: "supelec",
-  });
-
-  const requestOptions = {
-    method: "POST",
-    headers: headers,
-    body: similarityRequestBody,
-    redirect: "follow",
-  };
-
   try {
+    const { value } = await _req.json();
+    const similarityRequestBody = JSON.stringify({
+      word1: value,
+      word2: "supelec",
+    });
+
+    const requestOptions = {
+      method: "POST",
+      headers: headers,
+      body: similarityRequestBody,
+      redirect: "follow",
+    };
     const response = await fetch("https://word2vec-ten.vercel.app/similarity", requestOptions);
 
     if (!response.ok) {
